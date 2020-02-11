@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9df74265-0604-44c7-9584-b0dd7024e21a" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DepsProjectDetails">
+    <option name="cachedModuleDetails">
+      <map>
+        <entry key="$PROJECT_DIR$/deps.edn">
+          <value>
+            <ModuleDetails>
+              <option name="details" value="{:paths [&quot;src&quot;], :deps {org.clojure/clojure {:mvn/version &quot;1.10.1&quot;}}, :aliases {:deps {:extra-deps {org.clojure/tools.deps.alpha {:mvn/version &quot;0.8.599&quot;}}}, :test {:extra-paths [&quot;test&quot;]}}, :mvn/repos {&quot;central&quot; {:url &quot;https://repo1.maven.org/maven2/&quot;}, &quot;clojars&quot; {:url &quot;https://repo.clojars.org/&quot;}}, :system-aliases #{:test :deps}, :deps-tree {org.clojure/clojure {:mvn/version &quot;1.10.1&quot;, :deps/manifest :mvn, :paths [&quot;C:\\Users\\tomy\\.m2\\repository\\org\\clojure\\clojure\\1.10.1\\clojure-1.10.1.jar&quot;], :children (org.clojure/spec.alpha org.clojure/core.specs.alpha)}, org.clojure/spec.alpha {:mvn/version &quot;0.2.176&quot;, :deps/manifest :mvn, :paths [&quot;C:\\Users\\tomy\\.m2\\repository\\org\\clojure\\spec.alpha\\0.2.176\\spec.alpha-0.2.176.jar&quot;], :dependents [org.clojure/clojure], :children ()}, org.clojure/core.specs.alpha {:mvn/version &quot;0.2.44&quot;, :deps/manifest :mvn, :paths [&quot;C:\\Users\\tomy\\.m2\\repository\\org\\clojure\\core.specs.alpha\\0.2.44\\core.specs.alpha-0.2.44.jar&quot;], :dependents [org.clojure/clojure], :children ()}}, :test-paths [&quot;test&quot;]}" />
+              <option name="hash" value="d4280097df239c2afad6aecfa61189db" />
+            </ModuleDetails>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Clojure Namespace" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1XfJ7uVdZxagbl10IFyt1AkubtT" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="cursive.last.file.extension.C\:/Users/tomy/IdeaProjects/git590/src" value="clj" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="ClojureREPL" factoryName="Local" activateToolWindowBeforeRun="false">
+      <setting name="replType" value="NREPL" />
+      <setting name="execution" value="LEININGEN" />
+      <module name="" />
+      <setting name="jvmArgs" value="" />
+      <setting name="parameters" value="" />
+      <setting name="workingDir" value="" />
+      <setting name="profiles" value="" />
+      <setting name="aliases" value="" />
+      <setting name="fixLineNumbers" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="ClojureREPL" factoryName="Remote" activateToolWindowBeforeRun="false">
+      <setting name="host" value="" />
+      <setting name="port" value="0" />
+      <setting name="replType" value="SOCKET" />
+      <setting name="configType" value="SPECIFY" />
+      <setting name="fixLineNumbers" value="false" />
+      <module name="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9df74265-0604-44c7-9584-b0dd7024e21a" name="Default Changelist" comment="" />
+      <created>1581431051105</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1581431051105</updated>
+    </task>
+    <servers />
+  </component>
+</project>
