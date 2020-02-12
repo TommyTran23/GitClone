@@ -1,5 +1,5 @@
-(ns (:require [clojure.java.io :as io])
-  idiot
+(ns idiot
+  (:require [clojure.java.io :as io])
   (:import java.security.MessageDigest
            (java.io ByteArrayOutputStream ByteArrayInputStream)
            (java.util.zip DeflaterOutputStream InflaterInputStream)))
