@@ -8,11 +8,12 @@
 (defn help [args]
   (cond
     (= 0 (count args)) (println "idiot: the other stupid content tracker\n\nUsage: idiot <command> [<args>]\n\nCommands:\n   help\n   init\n   hash-object [-w] <file>\n   cat-file -p <address>")
-    (or (= "-h" args) (= "--help" args)) (println "idiot: the other stupid content tracker\n\nUsage: idiot <command> [<args>]\n\nCommands:\n   help\n   init\n   hash-object [-w] <file>\n   cat-file -p <address>")
-    (= "init" args) (println "Usage: idiot init")
-    (= "help" args) (println "Usage: idiot help <command>")
-    (= "hash-object" args) (println "Usage: idiot hash-object [-w] <file>")
-    :else (println "Error: invalid command\n")))
+    (or (= "-h" args) (= "--help" args)) (println "idiot help: print help for a command\\n\\nUsage: idiot help <command>\\n\\nArguments:\\n   <command>   the command to print help for\\n\\nCommands:\\n   help\\n   init\\n   hash-object [-w] <file>\\n   cat-file -p <address>")
+    (= "init" args) (println "idiot init: initialize a new database\\n\\nUsage: idiot init\\n\\nArguments:\\n   -h   print this message")
+    (= "help" args) (println "idiot help: print help for a command\\n\\nUsage: idiot help <command>\\n\\nArguments:\\n   <command>   the command to print help for\\n\\nCommands:\\n   help\\n   init\\n   hash-object [-w] <file>\\n   cat-file -p <address>")
+    (= "hash-object" args) (println "idiot hash-object: compute address and maybe create blob from file\\n\\nUsage: idiot hash-object [-w] <file>\\n\\nArguments:\\n   -h       print this message\\n   -w       write the file to database as a blob object\\n   <file>   the file")
+    (= "cat-file" args) (println "idiot cat-file: print information about an object\\n\\nUsage: idiot cat-file -p <address>\\n\\nArguments:\\n   -h          print this message\\n   -p          pretty-print contents based on object type\\n   <address>   the SHA1-based address of the object")
+    :else (println "Error: invalid command")))
 
 ;; checks if file exists
 (defn fileChecker [args]
@@ -20,14 +21,14 @@
 
 ;; makes .git/objects directories
 (defn folderMaker []
-  (let [objectFolder ".agit/objects/child"]
+  (let [objectFolder ".git/objects/child"]
     (io/make-parents objectFolder))
   (println "Initialized empty Idiot repository in .git directory\n"))
 
 ;; .git file maker
 (defn doGitInit []
   (cond
-    (fileChecker ".agit") (println "Error: .git directory already exists\n")
+    (fileChecker ".git") (println "Error: .git directory already exists\n")
     :else (folderMaker)))
 
 ;; init main function
@@ -35,7 +36,7 @@
   (cond
     (= 1 (count args)) (doGitInit)
     (or (= "-h" (second args)) (= "--help" (second args))) (println "idiot init: initialize a new database\n\nUsage: idiot init\n\nArguments:\n   -h   print this message")
-    :else (println "Error: init accepts no arguments\n")))
+    :else (println "Error: init accepts no arguments")))
 
 ;; make header+blob
 (defn makeHeaderBlob [file]
@@ -78,7 +79,7 @@
 (defn addToDatabase [fileContents blobAddress]
   (let [first2Characters (subs blobAddress 0 2)
         restOfCharacters (subs blobAddress 2)
-        zipDestination (str ".agit/objects/" first2Characters "/" restOfCharacters)]
+        zipDestination (str ".git/objects/" first2Characters "/" restOfCharacters)]
     (println blobAddress)
     (io/make-parents zipDestination)
     (io/copy (zip-str fileContents) (io/file zipDestination)))
@@ -87,8 +88,8 @@
 ;; check w flag
 (defn wFlag [args]
   (cond
-    (not (= 3 (count args))) (println "Error: you must specify a file.\n")
-    (not (fileChecker (nth args 2))) (println "Error: that file isn't readable\n")
+    (not (= 3 (count args))) (println "Error: you must specify a file.")
+    (not (fileChecker (nth args 2))) (println "Error: that file isn't readable")
     :else (addToDatabase (slurp (nth args 2)) (shaOfFile (nth args 2)))))
 
 ;; hash object main function
@@ -96,10 +97,10 @@
   (cond
     (or (= "-h" (second args)) (= "--help" (second args))) (println "idiot hash-object: compute address and maybe create blob from file\n\nUsage: idiot hash-object [-w] <file>\n\nArguments:\n   -h       print this message\n   -w       write the file to database as a blob object\n   <file>   the file")
     (= "-w" (second args)) (wFlag args)
-    (not (fileChecker ".agit")) (println "Error: could not find database. (Did you run `idiot init`?)")
-    (= 1 (count args)) (println "Error: you must specify a file.\n")
-    (not (fileChecker (second args))) (println "Error: that file isn't readable\n")
-    (not (.isFile (io/file (second args)))) (println "Error: that file isn't readable\n")
+    (not (fileChecker ".git")) (println "Error: could not find database. (Did you run `idiot init`?)")
+    (= 1 (count args)) (println "Error: you must specify a file.")
+    (not (fileChecker (second args))) (println "Error: that file isn't readable")
+    (not (.isFile (io/file (second args)))) (println "Error: that file isn't readable")
     :else (println (shaOfFile (second args)))
     ))
 
@@ -107,13 +108,13 @@
 (defn objectChecker [address]
   (let [first2Characters (subs address 0 2)
         restOfCharacters (subs address 2)
-        objectFile (str ".agit/objects/" first2Characters "/" restOfCharacters)]
+        objectFile (str ".git/objects/" first2Characters "/" restOfCharacters)]
     (.isFile (io/file objectFile))))
 
 (defn addressToSlash [address]
   (let [first2Characters (subs address 0 2)
         restOfCharacters (subs address 2)]
-    `destination (str ".agit/objects/" first2Characters "/" restOfCharacters))
+    `destination (str ".git/objects/" first2Characters "/" restOfCharacters))
   )
 
 ;; unzip files
@@ -136,21 +137,22 @@
 ;; cat-file main function
 (defn cat-file [args]
   (cond
-    (or (= "-h" (second args)) (= "--help" (second args))) (println "idiot cat-file: print information about an object\n\nUsage: idiot cat-file -p <address>\n\nArguments:\n   -h          print this message\n   -p          pretty-print contents based on object type\n   <address>   the SHA1-based address of the object")
-    (not (fileChecker ".agit")) (println "Error: could not find database. (Did you run `idiot init`?)")
-    (not= "-p" (second args)) (println "Error: the -p switch is required\n")
+    (or (= "-h" (second args)) (= "--help" (second args))) (print "idiot cat-file: print information about an object\n\nUsage: idiot cat-file -p <address>\n\nArguments:\n   -h          print this message\n   -p          pretty-print contents based on object type\n   <address>   the SHA1-based address of the object")
+    (not (fileChecker ".git")) (println "Error: could not find database. (Did you run `idiot init`?)")
+    (not= "-p" (second args)) (println "Error: the -p switch is required")
     ;(not (or (= 1 (count args) (= 3 (count args))))) (println "Error: you must specify an address.\n")
-    (not= 3 (count args)) (println "Error: you must specify an address.\n")
-    (not (objectChecker (nth args 2))) (println "Error: that address doesn't exist\n")
+    (not= 3 (count args)) (println "Error: you must specify an address.")
+    (not (objectChecker (nth args 2))) (println "Error: that address doesn't exist")
     :else (println (addressUnzipper (nth args 2)))
     ))
 
 (defn -main [& args]
   (cond
-    (= 0 (count args)) (println "nothing inputted change this later")
+    (= 0 (count args)) (print "idiot: the other stupid content tracker\\n\\nUsage: idiot <command> [<args>]\\n\\nCommands:\\n   help\\n   init\\n   hash-object [-w] <file>\\n   cat-file -p <address>")
+    (or (= "-h" (first args)) (= "--help" (first args))) (print "idiot: the other stupid content tracker\\n\\nUsage: idiot <command> [<args>]\\n\\nCommands:\\n   help\\n   init\\n   hash-object [-w] <file>\\n   cat-file -p <address>")
     (= "help" (first args)) (help (second args))
     (= "init" (first args)) (init args)
     (= "hash-object" (first args)) (hash-object args)
     (= "cat-file" (first args)) (cat-file args)
-    :else (println "Error: invalid command\n")
+    :else (print "Error: invalid command")
     ))
