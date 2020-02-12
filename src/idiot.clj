@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io])
   (:import java.security.MessageDigest
            (java.io ByteArrayOutputStream ByteArrayInputStream)
-           (java.util.zip DeflaterOutputStream)))
+           (java.util.zip DeflaterOutputStream InflaterInputStream)))
 
 ;; help command
 (defn help [args]
@@ -78,10 +78,9 @@
 (defn addToDatabase [fileContents blobAddress]
   (let [first2Characters (subs blobAddress 0 2)
         restOfCharacters (subs blobAddress 2)
-        zipDestination (str ".agit/objects/" first2Characters "/" restOfCharacters)
-        fileDestination (str ".agit/objects/" first2Characters "/" restOfCharacters)]
+        zipDestination (str ".agit/objects/" first2Characters "/" restOfCharacters)]
     (println blobAddress)
-    (io/make-parents fileDestination)
+    (io/make-parents zipDestination)
     (io/copy (zip-str fileContents) (io/file zipDestination)))
   )
 
@@ -104,11 +103,54 @@
     :else (println (shaOfFile (second args)))
     ))
 
+;; check if object exists
+(defn objectChecker [address]
+  (let [first2Characters (subs address 0 2)
+        restOfCharacters (subs address 2)
+        objectFile (str ".agit/objects/" first2Characters "/" restOfCharacters)]
+    (.isFile (io/file objectFile))))
+
+(defn addressToSlash [address]
+  (let [first2Characters (subs address 0 2)
+        restOfCharacters (subs address 2)]
+    `destination (str ".agit/objects/" first2Characters "/" restOfCharacters))
+  )
+
+;; unzip files
+(defn unzip
+  "Unzip the given data with zlib. Pass an opened input stream as the arg. The
+  caller should close the stream afterwards."
+  [input-stream]
+  (with-open [unzipper (InflaterInputStream. input-stream)
+              out (ByteArrayOutputStream.)]
+    (io/copy unzipper out)
+    (->> (.toByteArray out)
+         (map char)
+         (apply str))))
+
+;; unzipper of address
+(defn addressUnzipper [address]
+  (with-open [input (-> (addressToSlash address) io/file io/input-stream)]
+    (unzip input)))
+
+;; cat-file main function
+(defn cat-file [args]
+  (cond
+    (or (= "-h" (second args)) (= "--help" (second args))) (println "idiot cat-file: print information about an object\n\nUsage: idiot cat-file -p <address>\n\nArguments:\n   -h          print this message\n   -p          pretty-print contents based on object type\n   <address>   the SHA1-based address of the object")
+    (not (fileChecker ".agit")) (println "Error: could not find database. (Did you run `idiot init`?)")
+    (not= "-p" (second args)) (println "Error: the -p switch is required\n")
+    ;(not (or (= 1 (count args) (= 3 (count args))))) (println "Error: you must specify an address.\n")
+    (not= 3 (count args)) (println "Error: you must specify an address.\n")
+    (not (objectChecker (nth args 2))) (println "Error: that address doesn't exist\n")
+    :else (println (addressUnzipper (nth args 2)))
+    ))
+
 (defn -main [& args]
   (cond
     (= 0 (count args)) (println "nothing inputted change this later")
     (= "help" (first args)) (help (second args))
     (= "init" (first args)) (init args)
     (= "hash-object" (first args)) (hash-object args)
+    (= "cat-file" (first args)) (cat-file args)
     :else (println "Error: invalid command\n")
     ))
