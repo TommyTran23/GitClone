@@ -71,12 +71,26 @@
     (.close zipper)
     (ByteArrayInputStream. (.toByteArray out))))
 
+;; generate SHA1 of file contents
+(defn shaOfFile [file]
+  (sha1-sum (makeHeaderBlob (slurp file))))
+
+(defn addToDatabase [fileContents blobAddress]
+  (let [first2Characters (subs blobAddress 0 2)
+        restOfCharacters (subs blobAddress 2)
+        zipDestination (str ".agit/objects/" first2Characters "/" restOfCharacters)
+        fileDestination (str ".agit/objects/" first2Characters "/" restOfCharacters)]
+    (println blobAddress)
+    (io/make-parents fileDestination)
+    (io/copy (zip-str fileContents) (io/file zipDestination)))
+  )
+
 ;; check w flag
 (defn wFlag [args]
   (cond
     (not (= 3 (count args))) (println "Error: you must specify a file.\n")
     (not (fileChecker (nth args 2))) (println "Error: that file isn't readable\n")
-    :else (println "write file to database")))
+    :else (addToDatabase (slurp (nth args 2)) (shaOfFile (nth args 2)))))
 
 ;; hash object main function
 (defn hash-object [args]
@@ -87,7 +101,7 @@
     (= 1 (count args)) (println "Error: you must specify a file.\n")
     (not (fileChecker (second args))) (println "Error: that file isn't readable\n")
     (not (.isFile (io/file (second args)))) (println "Error: that file isn't readable\n")
-    :else (println (sha1-sum (makeHeaderBlob (slurp (second args)))))
+    :else (println (shaOfFile (second args)))
     ))
 
 (defn -main [& args]
