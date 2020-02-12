@@ -82,8 +82,7 @@
         zipDestination (str ".git/objects/" first2Characters "/" restOfCharacters)]
     (println blobAddress)
     (io/make-parents zipDestination)
-    (io/copy (zip-str fileContents) (io/file zipDestination)))
-  )
+    (io/copy (zip-str fileContents) (io/file zipDestination))))
 
 ;; check w flag
 (defn wFlag [args]
@@ -101,8 +100,7 @@
     (= 1 (count args)) (println "Error: you must specify a file.")
     (not (fileChecker (second args))) (println "Error: that file isn't readable")
     (not (.isFile (io/file (second args)))) (println "Error: that file isn't readable")
-    :else (println (shaOfFile (second args)))
-    ))
+    :else (println (shaOfFile (second args)))))
 
 ;; check if object exists
 (defn objectChecker [address]
@@ -114,8 +112,7 @@
 (defn addressToSlash [address]
   (let [first2Characters (subs address 0 2)
         restOfCharacters (subs address 2)]
-    `destination (str ".git/objects/" first2Characters "/" restOfCharacters))
-  )
+    `destination (str ".git/objects/" first2Characters "/" restOfCharacters)))
 
 ;; unzip files
 (defn unzip
@@ -140,11 +137,9 @@
     (or (= "-h" (second args)) (= "--help" (second args))) (println "idiot cat-file: print information about an object\n\nUsage: idiot cat-file -p <address>\n\nArguments:\n   -h          print this message\n   -p          pretty-print contents based on object type\n   <address>   the SHA1-based address of the object")
     (not (fileChecker ".git")) (println "Error: could not find database. (Did you run `idiot init`?)")
     (not= "-p" (second args)) (println "Error: the -p switch is required")
-    ;(not (or (= 1 (count args) (= 3 (count args))))) (println "Error: you must specify an address.\n")
     (not= 3 (count args)) (println "Error: you must specify an address")
     (not (objectChecker (nth args 2))) (println "Error: that address doesn't exist")
-    :else (print (addressUnzipper (nth args 2)))
-    ))
+    :else (print (addressUnzipper (nth args 2)))))
 
 (defn -main [& args]
   (cond
@@ -154,5 +149,4 @@
     (= "init" (first args)) (init args)
     (= "hash-object" (first args)) (hash-object args)
     (= "cat-file" (first args)) (cat-file args)
-    :else (println "Error: invalid command")
-    ))
+    :else (println "Error: invalid command")))
