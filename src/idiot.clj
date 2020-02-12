@@ -7,7 +7,7 @@
 ;; help command
 (defn help [args]
   (cond
-    (= 0 (count args)) (println "idiot: the other stupid content tracke\n\nUsage: idiot <command> [<args>]\n\nCommands:\n   help\n   init\n   hash-object [-w] <file>\n   cat-file -p <address>")
+    (= 0 (count args)) (println "idiot: the other stupid content tracker\n\nUsage: idiot <command> [<args>]\n\nCommands:\n   help\n   init\n   hash-object [-w] <file>\n   cat-file -p <address>")
     (or (= "-h" args) (= "--help" args)) (println "idiot help: print help for a command\n\nUsage: idiot help <command>\n\nArguments:\n   <command>   the command to print help for\n\nCommands:\n   help\n   init\n   hash-object [-w] <file>\n   cat-file -p <address>")
     (= "init" args) (println "idiot init: initialize a new database\n\nUsage: idiot init\n\nArguments:\n   -h   print this message")
     (= "help" args) (println "idiot help: print help for a command\n\nUsage: idiot help <command>\n\nArguments:\n   <command>   the command to print help for\n\nCommands:\n   help\n   init\n   hash-object [-w] <file>\n   cat-file -p <address>")
@@ -41,8 +41,7 @@
 ;; make header+blob
 (defn makeHeaderBlob [file]
   (let [fileLength (count file)]
-    (str "blob " fileLength "\000" file))
-  )
+    (str "blob " fileLength "\000" file)))
 
 ;; compute SHA1checksum of header+blob
 (defn sha1-hash-bytes [data]
@@ -143,7 +142,7 @@
 
 (defn -main [& args]
   (cond
-    (= 0 (count args)) (println "idiot: the other stupid content tracker\n\nUsage: idiot <command> [<args>]\n\nCommands:\n   help\n   init\n   hash-object [-w] <file>\n   cat-file -p <address>\n")
+    (= 0 (count args)) (println "idiot: the other stupid content tracker\n\nUsage: idiot <command> [<args>]\n\nCommands:\n   help\n   init\n   hash-object [-w] <file>\n   cat-file -p <address>")
     (or (= "-h" (first args)) (= "--help" (first args))) (println "idiot: the other stupid content tracker\n\nUsage: idiot <command> [<args>]\n\nCommands:\n   help\n   init\n   hash-object [-w] <file>\n   cat-file -p <address>")
     (= "help" (first args)) (help (second args))
     (= "init" (first args)) (init args)
