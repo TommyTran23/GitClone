@@ -25,6 +25,12 @@
     (io/make-parents objectFolder))
   (println "Initialized empty Idiot repository in .git directory"))
 
+;; takes address and slashes it into ../...........
+(defn addressToSlash [address]
+  (let [first2Characters (subs address 0 2)
+        restOfCharacters (subs address 2)]
+    `destination (str ".git/objects/" first2Characters "/" restOfCharacters)))
+
 ;; .git file maker
 (defn doGitInit []
   (cond
@@ -75,10 +81,16 @@
 (defn shaOfFile [file]
   (sha1-sum (makeHeaderBlob (slurp file))))
 
-(defn addToDatabase [fileContents blobAddress]
+#_(defn addToDatabase [fileContents blobAddress]
   (let [first2Characters (subs blobAddress 0 2)
         restOfCharacters (subs blobAddress 2)
         zipDestination (str ".git/objects/" first2Characters "/" restOfCharacters)]
+    (println blobAddress)
+    (io/make-parents zipDestination)
+    (io/copy (zip-str fileContents) (io/file zipDestination))))
+
+(defn addToDatabase [fileContents blobAddress]
+  (let [zipDestination (addressToSlash blobAddress)]
     (println blobAddress)
     (io/make-parents zipDestination)
     (io/copy (zip-str fileContents) (io/file zipDestination))))
@@ -102,16 +114,14 @@
     :else (println (shaOfFile (second args)))))
 
 ;; check if object exists
-(defn objectChecker [address]
+#_(defn objectChecker [address]
   (let [first2Characters (subs address 0 2)
         restOfCharacters (subs address 2)
         objectFile (str ".git/objects/" first2Characters "/" restOfCharacters)]
     (.isFile (io/file objectFile))))
 
-(defn addressToSlash [address]
-  (let [first2Characters (subs address 0 2)
-        restOfCharacters (subs address 2)]
-    `destination (str ".git/objects/" first2Characters "/" restOfCharacters)))
+(defn objectChecker [address]
+  (.isFile (io/file (addressToSlash address))))
 
 ;; unzip files
 (defn unzip
