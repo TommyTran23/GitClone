@@ -83,11 +83,10 @@
 
 ;; adds zipped file contents into stored objects database
 (defn addToDatabase [fileContents blobAddress]
-  (let [zipDestination (addressToSlash blobAddress)
-        blobFileContents (makeHeaderBlob fileContents)]
+  (let [zipDestination (addressToSlash blobAddress)]
     (println blobAddress)
     (io/make-parents zipDestination)
-    (io/copy (zip-str blobFileContents) (io/file zipDestination))))
+    (io/copy (zip-str fileContents) (io/file zipDestination))))
 
 ;; check w flag
 (defn wFlag [args]
