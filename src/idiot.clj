@@ -81,14 +81,7 @@
 (defn shaOfFile [file]
   (sha1-sum (makeHeaderBlob (slurp file))))
 
-#_(defn addToDatabase [fileContents blobAddress]
-  (let [first2Characters (subs blobAddress 0 2)
-        restOfCharacters (subs blobAddress 2)
-        zipDestination (str ".git/objects/" first2Characters "/" restOfCharacters)]
-    (println blobAddress)
-    (io/make-parents zipDestination)
-    (io/copy (zip-str fileContents) (io/file zipDestination))))
-
+;; adds zipped file contents into stored objects database
 (defn addToDatabase [fileContents blobAddress]
   (let [zipDestination (addressToSlash blobAddress)]
     (println blobAddress)
@@ -114,12 +107,6 @@
     :else (println (shaOfFile (second args)))))
 
 ;; check if object exists
-#_(defn objectChecker [address]
-  (let [first2Characters (subs address 0 2)
-        restOfCharacters (subs address 2)
-        objectFile (str ".git/objects/" first2Characters "/" restOfCharacters)]
-    (.isFile (io/file objectFile))))
-
 (defn objectChecker [address]
   (.isFile (io/file (addressToSlash address))))
 
