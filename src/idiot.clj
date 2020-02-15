@@ -81,8 +81,6 @@
 (defn shaOfFile [file]
   (sha1-sum (makeHeaderBlob (slurp file))))
 
-;; remove blob from unzipped contents
-
 ;; adds zipped file contents into stored objects database
 (defn addToDatabase [fileContents blobAddress]
   (let [zipDestination (addressToSlash blobAddress)]
@@ -126,8 +124,8 @@
 
 ;; remove blob heading from unzipper
 (defn blobRemover [blobAndContents]
-  (let [startingNull (index-of blobAndContents "\000")]
-    (println startingNull)))
+  (let [endNull (+ (clojure.string/index-of blobAndContents "\000") 2)]
+    (subs blobAndContents endNull)))
 
 ;; unzipper of address
 (defn addressUnzipper [address]
