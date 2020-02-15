@@ -19,22 +19,22 @@
 (defn fileChecker [fileToCheck]
   (.exists (io/file fileToCheck)))
 
-;; makes .git/objects directories
+;; makes .agit/objects directories
 (defn folderMaker []
-  (let [objectFolder ".git/objects/child"]
+  (let [objectFolder ".agit/objects/child"]
     (io/make-parents objectFolder))
-  (println "Initialized empty Idiot repository in .git directory"))
+  (println "Initialized empty Idiot repository in .agit directory"))
 
 ;; takes address and slashes it into ../........... form
 (defn addressToSlash [address]
   (let [first2Characters (subs address 0 2)
         restOfCharacters (subs address 2)]
-    `destination (str ".git/objects/" first2Characters "/" restOfCharacters)))
+    `destination (str ".agit/objects/" first2Characters "/" restOfCharacters)))
 
-;; .git file maker
+;; .agit file maker
 (defn doGitInit []
   (cond
-    (fileChecker ".git") (println "Error: .git directory already exists")
+    (fileChecker ".agit") (println "Error: .agit directory already exists")
     :else (folderMaker)))
 
 ;; init main function
@@ -88,7 +88,7 @@
   (let [zipDestination (addressToSlash blobAddress)]
     (println blobAddress)
     (io/make-parents zipDestination)
-    (io/copy (zip-str (shaOfFile fileContents)) (io/file zipDestination))))
+    (io/copy (zip-str (makeHeaderBlob fileContents)) (io/file zipDestination))))
 
 ;; check w flag
 (defn wFlag [args]
@@ -102,7 +102,7 @@
   (cond
     (or (= "-h" (second args)) (= "--help" (second args))) (println "idiot hash-object: compute address and maybe create blob from file\n\nUsage: idiot hash-object [-w] <file>\n\nArguments:\n   -h       print this message\n   -w       write the file to database as a blob object\n   <file>   the file")
     (= "-w" (second args)) (wFlag args)
-    (not (fileChecker ".git")) (println "Error: could not find database. (Did you run `idiot init`?)")
+    (not (fileChecker ".agit")) (println "Error: could not find database. (Did you run `idiot init`?)")
     (= 1 (count args)) (println "Error: you must specify a file.")
     (not (fileChecker (second args))) (println "Error: that file isn't readable")
     (not (.isFile (io/file (second args)))) (println "Error: that file isn't readable")
@@ -124,6 +124,11 @@
          (map char)
          (apply str))))
 
+;; remove blob heading from unzipper
+(defn blobRemover [blobAndContents]
+  (let [startingNull (index-of blobAndContents "\000")]
+    (println startingNull)))
+
 ;; unzipper of address
 (defn addressUnzipper [address]
   (with-open [input (-> (addressToSlash address) io/file io/input-stream)]
@@ -133,11 +138,11 @@
 (defn cat-file [args]
   (cond
     (or (= "-h" (second args)) (= "--help" (second args))) (println "idiot cat-file: print information about an object\n\nUsage: idiot cat-file -p <address>\n\nArguments:\n   -h          print this message\n   -p          pretty-print contents based on object type\n   <address>   the SHA1-based address of the object")
-    (not (fileChecker ".git")) (println "Error: could not find database. (Did you run `idiot init`?)")
+    (not (fileChecker ".agit")) (println "Error: could not find database. (Did you run `idiot init`?)")
     (not= "-p" (second args)) (println "Error: the -p switch is required")
     (not= 3 (count args)) (println "Error: you must specify an address")
     (not (objectChecker (nth args 2))) (println "Error: that address doesn't exist")
-    :else (print (addressUnzipper (nth args 2)))))
+    :else (print (blobRemover (addressUnzipper (nth args 2))))))
 
 (defn -main [& args]
   (cond
