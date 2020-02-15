@@ -88,7 +88,7 @@
   (let [zipDestination (addressToSlash blobAddress)]
     (println blobAddress)
     (io/make-parents zipDestination)
-    (io/copy (zip-str fileContents) (io/file zipDestination))))
+    (io/copy (zip-str (shaOfFile fileContents)) (io/file zipDestination))))
 
 ;; check w flag
 (defn wFlag [args]
