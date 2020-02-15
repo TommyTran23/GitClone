@@ -45,9 +45,9 @@
     :else (println "Error: init accepts no arguments")))
 
 ;; make header+blob
-(defn makeHeaderBlob [file]
-  (let [fileLength (count file)]
-    (str "blob " fileLength "\000" file)))
+(defn makeHeaderBlob [fileContents]
+  (let [fileLength (count fileContents)]
+    (str "blob " fileLength "\000" fileContents)))
 
 ;; compute SHA1checksum of header+blob
 (defn sha1-hash-bytes [data]
@@ -80,6 +80,8 @@
 ;; generate SHA1 of file contents
 (defn shaOfFile [file]
   (sha1-sum (makeHeaderBlob (slurp file))))
+
+;; remove blob from unzipped contents
 
 ;; adds zipped file contents into stored objects database
 (defn addToDatabase [fileContents blobAddress]
