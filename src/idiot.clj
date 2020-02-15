@@ -1,5 +1,6 @@
 (ns idiot
   (:require [clojure.java.io :as io])
+  (:require [clojure.string :as s])
   (:import java.security.MessageDigest
            (java.io ByteArrayOutputStream ByteArrayInputStream)
            (java.util.zip DeflaterOutputStream InflaterInputStream)))
@@ -124,7 +125,7 @@
 
 ;; remove blob heading from unzipper
 (defn blobRemover [blobAndContents]
-  (let [endNull (+ (clojure.string/index-of blobAndContents "\000") 2)]
+  (let [endNull (+ (s/index-of blobAndContents "\000") 1)]
     (subs blobAndContents endNull)))
 
 ;; unzipper of address
