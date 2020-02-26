@@ -1,8 +1,8 @@
 (ns idiot
   (:require [clojure.java.io :as io])
   (:require [clojure.string :as s])
-  (:import java.security.MessageDigest
-           (java.io ByteArrayOutputStream ByteArrayInputStream)
+  (:require [sha1 :refer [sha1-sum]])
+  (:import (java.io ByteArrayOutputStream ByteArrayInputStream)
            (java.util.zip DeflaterOutputStream InflaterInputStream)))
 
 ;; help command
@@ -49,23 +49,6 @@
 (defn makeHeaderBlob [fileContents]
   (let [fileLength (count fileContents)]
     (str "blob " fileLength "\000" fileContents)))
-
-;; compute SHA1checksum of header+blob
-(defn sha1-hash-bytes [data]
-  (.digest (MessageDigest/getInstance "sha1")
-           (.getBytes data)))
-
-(defn byte->hex-digits [byte]
-  (format "%02x"
-          (bit-and 0xff byte)))
-
-(defn bytes->hex-string [bytes]
-  (->> bytes
-       (map byte->hex-digits)
-       (apply str)))
-
-(defn sha1-sum [header+blob]
-  (bytes->hex-string (sha1-hash-bytes header+blob)))
 
 ;; zip files
 (defn zip-str
