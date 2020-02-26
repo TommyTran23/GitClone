@@ -2,6 +2,9 @@
   (:require [clojure.java.io :as io])
   (:require [clojure.string :as s])
   (:require [sha1 :refer [sha1-sum]])
+  (:require [byte-array :as ba])
+  (:require [sha])
+  (:require [git])
   (:import (java.io ByteArrayOutputStream ByteArrayInputStream)
            (java.util.zip DeflaterOutputStream InflaterInputStream)))
 
@@ -126,12 +129,33 @@
     (not (objectChecker (nth args 2))) (println "Error: that address doesn't exist")
     :else (print (blobRemover (addressUnzipper (nth args 2))))))
 
-;;;;;;;; assignment 2 start refactor above later
+;;;;;;;; assignment 2 start refactor above later everything new is below
+
+;; checks to see if a file or directory
+(defn isFile [directoryOrFile]
+  (.isFile (io/file directoryOrFile)))
+
+;; compute 20 byte address of contents
+(defn compute20Bytes [content]
+  (sha/bytes (ba/cast (makeHeaderBlob content))))
+
+(defn createTree [directoryOrFile]
+  (if (isFile directoryOrFile)
+    (git/address "tree" (str "100644 " "file" "\000" (new String (byte-array (compute20Bytes "file contents\n")))))
+    (git/address "tree" (str "040000 " directoryOrFile "\000" (new String (byte-array (compute20Bytes "file contents\n")))))))
+
+(defn writeTreeObjects [fileToStore]
+  (if (not (objectChecker (git/address "blob" "file contents\n")))
+    (addToDatabase "file contents\n" (git/address "blob" "file contents\n"))
+    (print "does exist")))
+
 (defn write-wtree [args]
   (cond
     (or (= "-h" (first args)) (= "--help" (first args))) (println "idiot write-wtree: write the working tree to the database\n\nUsage: idiot write-wtree\n\nArguments:\n   -h       print this message")
     (not= 0 (count args)) (println "Error: write-wtree accepts no arguments")
-    (not (fileChecker ".agit")) (println "Error: could not find database. (Did you run `idiot init`?)")))
+    (not (fileChecker ".agit")) (println "Error: could not find database. (Did you run `idiot init`?)")
+    :else #_(print (createTree "file.txt"))
+          (writeTreeObjects "thing")))
 
 (defn -main [& args]
   (cond

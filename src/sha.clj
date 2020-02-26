@@ -1,6 +1,7 @@
 (ns sha
   (:refer-clojure :exclude [bytes])
-  (:require [byte-array :as ba])
+  (:require [byte-array :as ba]
+            [clojure.java.io :as io])
   (:import java.security.MessageDigest))
 
 (defn bytes
