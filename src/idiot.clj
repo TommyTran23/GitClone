@@ -132,15 +132,10 @@
 ;;;;;;;; assignment 2 start refactor above later everything new is below
 
 ;; add to database without printing the address
-;; adds zipped file contents into stored objects database
 (defn addToDatabase2 [fileContents blobAddress]
   (let [zipDestination (addressToSlash blobAddress)]
     (io/make-parents zipDestination)
     (io/copy (zip-str (makeHeaderBlob fileContents)) (io/file zipDestination))))
-
-;; checks to see if a file or directory
-(defn isFile [directoryOrFile]
-  (.isFile (io/file directoryOrFile)))
 
 ;; compute 20 byte address of contents
 (defn compute20Bytes [content]
@@ -150,36 +145,28 @@
 (defn fileLister [givenDirectory]
   (.list (io/file givenDirectory)))
 
-(defn childMaker [givenDirectory]
-  (let [children (map #(str givenDirectory "/" %) (sort fileLister))]))
+;; write blob/tree to database if doesn't exist yet
+(defn writeBlobOrTree [file]
+  (if (.isFile (io/file file))
+    (addToDatabase (slurp file) (shaOfFile file))))
 
-(defn handleFile [addressesToComputeLater]
-  (addToDatabase2 (slurp (first addressesToComputeLater)) (shaOfFile (first addressesToComputeLater))))
-
-;; given files begin to create blob contents
-(defn createBlobAndTrees [filesAndDirectories]
-  (print (shaOfFile (first filesAndDirectories)))
-  #_(if (not (objectChecker (shaOfFile (first filesAndDirectories))))
-    (addToDatabase2 (slurp (first filesAndDirectories)) (shaOfFile (first filesAndDirectories)))
-    (print "do nothing")))
+;; beginning of new write-wtree functions
+(defn processEntireDirectory [directory]
+  (let [filesCurrent (fileLister directory)
+        pathOfFiles (map #(str directory "/" %) (sort filesCurrent))]
+    (doall (map writeBlobOrTree pathOfFiles))))
 
 (defn createTree [directoryOrFile]                          ;; update later
-  (if (isFile directoryOrFile)
+  (if (.isFile directoryOrFile)
     (git/address "tree" (str "100644 " "file" "\000" (new String (byte-array (compute20Bytes "file contents\n")))))
     (git/address "tree" (str "40000 " "dir" "\000" (new String (byte-array (compute20Bytes "file contents\n")))))))
-
-(defn writeTreeObjects [fileToStore]
-  (if (not (objectChecker (git/address "blob" "file contents\n")))
-    (addToDatabase "file contents\n" (git/address "blob" "file contents\n"))
-    (print "does exist")))
 
 (defn write-wtree [args]
   (cond
     (or (= "-h" (first args)) (= "--help" (first args))) (println "idiot write-wtree: write the working tree to the database\n\nUsage: idiot write-wtree\n\nArguments:\n   -h       print this message")
     (not= 0 (count args)) (println "Error: write-wtree accepts no arguments")
     (not (fileChecker ".agit")) (println "Error: could not find database. (Did you run `idiot init`?)")
-    :else #_(print (createTree "file.txt"))
-    (apply print (fileLister "./dir"))))
+    :else (processEntireDirectory "./dir")))
 
 (defn -main [& args]
   (cond
